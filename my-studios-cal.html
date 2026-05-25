@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Studios</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #1C1917;
+  --paper: #F7F4EF;
+  --paper2: #EDE9E2;
+  --muted: #9C9489;
+  --faint: #D6D0C6;
+
+  --pilates-hue: #8B5E52; --pilates-light: #F2EAE7; --pilates-mid: #C9967F;
+  --hara-hue: #4A6741;    --hara-light: #E8F0E6;    --hara-mid: #7CA870;
+  --shimo-hue: #3B5F7A;   --shimo-light: #E4EDF4;   --shimo-mid: #6A9AB8;
+  --str-hue: #5C4A7A;     --str-light: #EDE8F5;     --str-mid: #9B82C8;
+  
+  --run-hue: #7A3A2A;     --run-light: #F5EAE6;     --run-mid: #C87A5A;
+  --lab-hue: #6B5A28;      --lab-light: #F5F0DC;     --lab-mid: #C4A84A;
+}
+
+body { font-family: 'Geist Mono', monospace; background: var(--paper); color: var(--ink); min-height: 100vh; font-size: 11px; }
+
+/* ── LAYOUT: sidebar + main ── */
+.app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+header {
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--faint);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  background: var(--paper); flex-shrink: 0;
+}
+.wordmark { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; font-style: italic; line-height: 1; }
+.wordmark span { font-style: normal; font-weight: 500; color: var(--muted); font-size: 12px; margin-left: 10px; letter-spacing: 1.5px; text-transform: uppercase; vertical-align: middle; }
+
+.studios-legend { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.leg { display: flex; align-items: center; gap: 5px; font-size: 9px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); }
+.leg-swatch { width: 7px; height: 7px; border-radius: 2px; }
+.leg-swatch.p  { background: var(--pilates-mid); }
+.leg-swatch.h  { background: var(--hara-mid); }
+.leg-swatch.s  { background: var(--shimo-mid); }
+.leg-swatch.str { background: var(--str-mid); }
+
+.leg-swatch.rn { background: var(--run-mid); }
+.leg-swatch.lab { background: var(--lab-mid); }
+.leg-swatch.me { background: var(--my-class); }
+
+/* ── CONTROLS ── */
+.controls {
+  padding: 10px 28px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--faint); background: var(--paper); flex-shrink: 0;
+}
+.day-tabs { display: flex; gap: 3px; }
+.tab { padding: 4px 10px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.8px; text-transform: uppercase; border: 1px solid var(--faint); background: transparent; color: var(--muted); cursor: pointer; border-radius: 3px; transition: all 0.12s; }
+.tab:hover { border-color: var(--ink); color: var(--ink); }
+.tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.tab.today-tab { border-color: var(--ink); color: var(--ink); font-weight:500; }
+.tab.today-tab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.sep { width: 1px; height: 18px; background: var(--faint); margin: 0 3px; }
+.filter-group { display: flex; gap: 3px; flex-wrap: wrap; }
+.filt { padding: 4px 8px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.6px; text-transform: uppercase; border: 1px solid var(--faint); background: transparent; color: var(--muted); cursor: pointer; border-radius: 3px; transition: all 0.12s; display: flex; align-items: center; gap: 4px; }
+.filt:hover { color: var(--ink); border-color: var(--ink); }
+.filt.on-p  { background: var(--pilates-light); color: var(--pilates-hue); border-color: var(--pilates-mid); }
+.filt.on-h  { background: var(--hara-light);    color: var(--hara-hue);    border-color: var(--hara-mid); }
+.filt.on-s  { background: var(--shimo-light);   color: var(--shimo-hue);   border-color: var(--shimo-mid); }
+.filt.on-str { background: var(--str-light); color: var(--str-hue); border-color: var(--str-mid); }
+
+.filt.on-rn { background: var(--run-light);     color: var(--run-hue);     border-color: var(--run-mid); }
+.filt.on-lab { background: var(--lab-light);    color: var(--lab-hue);     border-color: var(--lab-mid); }
+.dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.dot-p  { background: var(--pilates-mid); } .dot-h  { background: var(--hara-mid); }
+.dot-s  { background: var(--shimo-mid); }  .dot-str { background: var(--str-mid); }
+   .dot-rn { background: var(--run-mid); }
+.dot-lab { background: var(--lab-mid); }
+.right-controls { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.panel-toggle { padding: 4px 10px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.6px; text-transform: uppercase; border: 1px solid var(--faint); background: transparent; color: var(--muted); cursor: pointer; border-radius: 3px; transition: all 0.12s; }
+.panel-toggle:hover, .panel-toggle.on { border-color: var(--ink); color: var(--ink); background: var(--paper2); }
+
+/* ── BODY: calendar + side panel ── */
+.body-wrap { display: flex; flex: 1; overflow: hidden; }
+
+/* ── CALENDAR ── */
+.cal-wrap { flex: 1; overflow: auto; padding: 0 28px 40px; }
+
+.grid { display: grid; grid-template-columns: 52px repeat(7, 1fr); min-width: 680px; border-left: 1px solid var(--faint); border-top: 1px solid var(--faint); margin-top: 0; }
+.gh { padding: 10px 8px 8px; border-right: 1px solid var(--faint); border-bottom: 1px solid var(--faint); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); background: var(--paper); position: sticky; top: 0; z-index: 5; }
+.gh.today-col { color: var(--ink); font-weight:500; }
+.time-label { padding: 8px 5px 0; font-size: 8px; color: var(--muted); text-align: right; border-right: 1px solid var(--faint); border-bottom: 1px solid var(--faint); letter-spacing: 0.3px; background: var(--paper); white-space: nowrap; }
+.day-cell { border-right: 1px solid var(--faint); border-bottom: 1px solid var(--faint); padding: 4px 4px; vertical-align: top; min-height: 44px; }
+.day-cell.today-col { background: rgba(0,0,0,0.015); }
+
+/* ── PILLS ── */
+.pill { border-radius: 3px; padding: 5px 6px; margin-bottom: 3px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s, opacity 0.15s; position: relative; user-select: none; }
+.pill:active { cursor: grabbing; }
+.pill:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+.pill:last-child { margin-bottom: 0; }
+.pill.pilates { background: var(--pilates-light); border-left: 2px solid var(--pilates-mid); }
+.pill.harajuku { background: var(--hara-light);   border-left: 2px solid var(--hara-mid); }
+.pill.shimo    { background: var(--shimo-light);  border-left: 2px solid var(--shimo-mid); }
+.pill.strength { background: var(--str-light);    border-left: 2px solid var(--str-mid); }
+
+.pill.run      { background: var(--run-light);    border-left: 2px solid var(--run-mid); }
+.pill.lab      { background: var(--lab-light);    border-left: 2px solid var(--lab-mid); }
+.pill.dimmed   { opacity: 0.25; }
+.pill.in-plan  { opacity: 0.45; cursor: default; }
+.pill-time { font-size: 8px; letter-spacing: 0.3px; margin-bottom: 2px; opacity: 0.7; }
+.pill.pilates .pill-time { color: var(--pilates-hue); } .pill.harajuku .pill-time { color: var(--hara-hue); }
+.pill.shimo .pill-time   { color: var(--shimo-hue); }  .pill.strength .pill-time { color: var(--str-hue); }
+   .pill.run .pill-time      { color: var(--run-hue); }
+.pill.lab .pill-time      { color: var(--lab-hue); }
+.pill-name { font-size: 9px; font-weight: 500; line-height: 1.2; letter-spacing: 0.2px; }
+.pill.pilates .pill-name { color: var(--pilates-hue); } .pill.harajuku .pill-name { color: var(--hara-hue); }
+.pill.shimo .pill-name   { color: var(--shimo-hue); }  .pill.strength .pill-name { color: var(--str-hue); }
+   .pill.run .pill-name      { color: var(--run-hue); }
+.pill.lab .pill-name      { color: var(--lab-hue); }
+.pill-instructor { font-size: 8px; color: var(--muted); margin-top: 1px; font-weight: 300; }
+.pill.hidden { display: none !important; }
+
+/* ── SIDE PANEL ── */
+.side-panel {
+  width: 260px; flex-shrink: 0; border-left: 1px solid var(--faint); background: var(--paper2);
+  display: flex; flex-direction: column; overflow: hidden; transition: width 0.2s ease;
+}
+.side-panel.closed { width: 0; border-left: none; overflow: hidden; }
+
+.panel-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--faint); flex-shrink: 0; }
+.panel-title { font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.panel-sub { font-size: 9px; color: var(--muted); font-weight: 300; }
+
+.panel-days { flex: 1; overflow-y: auto; }
+.panel-day { border-bottom: 1px solid var(--faint); }
+.panel-day-header { padding: 8px 16px 6px; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; justify-content: space-between; }
+.panel-day-header.today-day { color: var(--ink); font-weight:500; }
+.panel-drop-zone {
+  min-height: 36px; padding: 4px 10px 8px; display: flex; flex-direction: column; gap: 4px;
+}
+.panel-empty { font-size: 9px; color: var(--faint); font-style: italic; padding: 4px 6px; }
+
+/* Panel pills — same as calendar pills but with remove button */
+/* plan-pill styles now in new CSS block */
+.plan-pill.pilates { background: var(--pilates-light); border-left: 2px solid var(--pilates-mid); }
+.plan-pill.harajuku { background: var(--hara-light);   border-left: 2px solid var(--hara-mid); }
+.plan-pill.shimo    { background: var(--shimo-light);  border-left: 2px solid var(--shimo-mid); }
+.plan-pill.strength { background: var(--str-light);    border-left: 2px solid var(--str-mid); }
+
+.plan-pill.run      { background: var(--run-light);    border-left: 2px solid var(--run-mid); }
+.plan-pill.lab      { background: var(--lab-light);    border-left: 2px solid var(--lab-mid); }
+.plan-pill-name { font-weight: 500; line-height: 1.3; }
+.plan-pill-sub  { color: var(--muted); font-size: 8px; margin-top: 1px; }
+.plan-pill .remove-btn { position: absolute; top: 4px; right: 5px; font-size: 10px; line-height: 1; background: none; border: none; color: var(--muted); cursor: pointer; padding: 0; font-family: inherit; }
+.plan-pill .remove-btn:hover { color: var(--ink); }
+
+.panel-footer { padding: 10px 16px; border-top: 1px solid var(--faint); flex-shrink: 0; }
+.panel-stats { font-size: 9px; color: var(--muted); line-height: 1.9; }
+.panel-stats strong { color: var(--ink); }
+.panel-section-title { font-size: 8px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin: 10px 0 4px; }
+.conflict-list { font-size: 9px; color: #9B3A3A; line-height: 1.7; }
+.conflict-badge { display: inline-block; background: #FDF0F0; border: 1px solid #E8AAAA; border-radius: 2px; padding: 1px 5px; margin-bottom: 3px; font-size: 8px; }
+.hours-row { display: flex; justify-content: space-between; font-size: 9px; padding: 2px 0; border-bottom: 1px solid var(--faint); }
+.hours-row:last-child { border-bottom: none; }
+.hours-label { color: var(--muted); }
+.hours-val { color: var(--ink); font-weight: 500; }
+.clear-btn { margin-top: 10px; width: 100%; padding: 6px; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: 0.8px; text-transform: uppercase; border: 1px solid var(--faint); background: transparent; color: var(--muted); cursor: pointer; border-radius: 3px; transition: all 0.12s; }
+.clear-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+/* Day notes */
+.day-note-wrap { padding: 2px 16px 8px; }
+.day-note { width: 100%; font-family: "Geist Mono", monospace; font-size: 9px; border: 1px solid transparent; border-radius: 3px; background: transparent; color: var(--ink); resize: none; padding: 4px 6px; line-height: 1.5; transition: border-color 0.12s, background 0.12s; outline: none; }
+.day-note:focus { border-color: var(--faint); background: var(--paper); }
+.day-note::placeholder { color: var(--faint); }
+
+/* Conflict pill on calendar */
+.pill.conflict { outline: 1.5px solid #C94040; outline-offset: -1px; }
+.pill.conflict::after { content: "⚠"; position: absolute; top: 3px; right: 4px; font-size: 8px; color: #C94040; }
+
+/* TBD strip */
+.tbd-strip { padding: 12px 28px 0; display: flex; align-items: center; gap: 10px; }
+.tbd-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; border: 1px dashed var(--self-mid); border-radius: 3px; padding: 2px 6px; color: var(--self-hue); }
+
+
+@media (max-width: 700px) {
+  header, .controls { padding-left: 16px; padding-right: 16px; }
+  .wordmark { font-size: 20px; }
+  .side-panel { width: 100%; position: fixed; bottom: 0; left: 0; right: 0; height: 50vh; border-left: none; border-top: 1px solid var(--faint); z-index: 50; }
+  .side-panel.closed { height: 0; }
+  .body-wrap { flex-direction: column; }
+  .cal-wrap { padding: 0 16px 20px; }
+}
+
+/* ── CUSTOM BLOCKS ── */
+.custom-block {
+  border-radius: 3px;
+  padding: 5px 6px;
+  margin-bottom: 3px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.custom-block:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+.custom-block .pill-time { font-size: 8px; margin-bottom: 2px; opacity: 0.7; }
+.custom-block .pill-name { font-size: 9px; font-weight: 500; }
+.custom-block .block-del { position: absolute; top: 3px; right: 4px; font-size: 10px; background: none; border: none; cursor: pointer; color: rgba(0,0,0,0.3); padding: 0; line-height: 1; }
+.custom-block .block-del:hover { color: rgba(0,0,0,0.7); }
+
+/* ── ADD BLOCK MODAL ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; display: flex; align-items: center; justify-content: center; }
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--paper); border: 1px solid var(--faint); border-radius: 8px;
+  padding: 24px; width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+.modal-title { font-family: "Cormorant Garamond", serif; font-size: 18px; font-weight: 400; font-style: italic; margin-bottom: 16px; }
+.modal label { display: block; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; margin-top: 12px; }
+.modal input[type=text], .modal input[type=time], .modal select {
+  width: 100%; padding: 7px 10px; font-family: "Geist Mono", monospace; font-size: 11px;
+  border: 1px solid var(--faint); border-radius: 3px; background: var(--paper2); color: var(--ink);
+  outline: none;
+}
+.modal input:focus, .modal select:focus { border-color: var(--ink); }
+.color-row { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+.color-opt { width: 22px; height: 22px; border-radius: 3px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.1s; }
+.color-opt.selected { border-color: var(--ink); }
+.modal-btns { display: flex; gap: 8px; margin-top: 20px; }
+.modal-btn { flex: 1; padding: 8px; font-family: "Geist Mono", monospace; font-size: 10px; letter-spacing: 0.6px; text-transform: uppercase; border-radius: 3px; cursor: pointer; transition: all 0.12s; }
+.modal-btn.primary { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); }
+.modal-btn.primary:hover { opacity: 0.85; }
+.modal-btn.secondary { background: transparent; color: var(--muted); border: 1px solid var(--faint); }
+.modal-btn.secondary:hover { border-color: var(--ink); color: var(--ink); }
+
+/* ── PRINT STYLES ── */
+@media print {
+  .controls, .side-panel, .panel-toggle, .add-block-btn, .tbd-strip, .block-del,
+  header .studios-legend { display: none !important; }
+  .app { height: auto; overflow: visible; }
+  .body-wrap { overflow: visible; }
+  .cal-wrap { overflow: visible; padding: 0; }
+  header { position: static; padding: 12px 20px; }
+  .wordmark { font-size: 18px; }
+  .grid { min-width: 0; page-break-inside: avoid; }
+  .gh { position: static; }
+  body { background: white; font-size: 9px; }
+  .pill { break-inside: avoid; }
+}
+
+/* ── PLAN PILL EDIT ── */
+.plan-pill { border-radius: 3px; padding: 6px 44px 6px 8px; position: relative; font-size: 9px; cursor: default; margin-bottom: 4px; }
+.plan-pill-name { font-weight: 500; line-height: 1.3; }
+.plan-pill-sub  { color: var(--muted); font-size: 8px; margin-top: 1px; }
+.plan-pill-note { font-size: 8px; color: var(--ink); margin-top: 3px; font-style: italic; opacity: 0.75; white-space: pre-wrap; }
+.plan-pill .pill-actions { position: absolute; top: 4px; right: 4px; display: flex; gap: 3px; }
+.plan-pill .pill-actions button { font-size: 10px; line-height: 1; background: none; border: none; color: var(--muted); cursor: pointer; padding: 0 2px; font-family: inherit; }
+.plan-pill .pill-actions button:hover { color: var(--ink); }
+.panel-add-block-btn { margin: 4px 10px 8px; width: calc(100% - 20px); padding: 5px; font-family: "Geist Mono", monospace; font-size: 9px; letter-spacing: 0.6px; text-transform: uppercase; border: 1px dashed var(--faint); background: transparent; color: var(--muted); cursor: pointer; border-radius: 3px; transition: all 0.12s; }
+.panel-add-block-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+/* Plan custom blocks */
+.panel-custom-block { border-radius: 3px; padding: 6px 44px 6px 8px; margin-bottom: 4px; position: relative; font-size: 9px; cursor: default; }
+.panel-custom-block .pill-actions { position: absolute; top: 4px; right: 4px; display: flex; gap: 3px; }
+.panel-custom-block .pill-actions button { font-size: 10px; line-height: 1; background: none; border: none; color: rgba(0,0,0,0.35); cursor: pointer; padding: 0 2px; }
+.panel-custom-block .pill-actions button:hover { color: rgba(0,0,0,0.7); }
+
+/* ── EDIT MODAL ── */
+.edit-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200; display: flex; align-items: center; justify-content: center; }
+.edit-modal-overlay.hidden { display: none; }
+.edit-modal { background: var(--paper); border: 1px solid var(--faint); border-radius: 8px; padding: 22px; width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); }
+.edit-modal-title { font-family: "Cormorant Garamond", serif; font-size: 17px; font-weight: 400; font-style: italic; margin-bottom: 4px; }
+.edit-modal-sub { font-size: 9px; color: var(--muted); margin-bottom: 14px; }
+.edit-modal label { display: block; font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; margin-top: 10px; }
+.edit-modal input[type=text], .edit-modal textarea {
+  width: 100%; padding: 6px 8px; font-family: "Geist Mono", monospace; font-size: 10px;
+  border: 1px solid var(--faint); border-radius: 3px; background: var(--paper2); color: var(--ink); outline: none;
+}
+.edit-modal textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+.edit-modal input:focus, .edit-modal textarea:focus { border-color: var(--ink); }
+
+/* ── PANEL ADD BLOCK MODAL ── */
+.panel-block-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200; display: flex; align-items: center; justify-content: center; }
+.panel-block-overlay.hidden { display: none; }
+
+/* ── SCHEDULE PDF PRINT ── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .app { display: block !important; height: auto !important; }
+  .body-wrap { display: block !important; overflow: visible !important; }
+  .cal-wrap, .side-panel { display: none !important; }
+  #schedulePrintView { display: block !important; }
+  .controls, header .studios-legend, .right-controls { display: none !important; }
+  .tbd-strip { display: none !important; }
+  header { position: static !important; }
+  body { background: white !important; }
+  @page { margin: 18mm 14mm; }
+}
+
+/* ── SCHEDULE PRINT VIEW ── */
+#schedulePrintView { display: none; font-family: "Geist Mono", monospace; padding: 0 20px 40px; }
+
+.spv-header { text-align: center; padding: 28px 0 20px; border-bottom: 2px solid #1C1917; margin-bottom: 28px; }
+.spv-header h1 { font-family: "Cormorant Garamond", serif; font-size: 28px; font-weight: 300; font-style: italic; letter-spacing: -0.5px; color: #1C1917; }
+.spv-header p { font-size: 9px; color: #9C9489; margin-top: 5px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* 7-column weekly grid */
+.spv-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 24px; }
+.spv-col { }
+.spv-col-hdr {
+  font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: #9C9489;
+  padding-bottom: 6px; border-bottom: 1.5px solid #1C1917; margin-bottom: 8px;
+  font-weight: 500;
+}
+.spv-col-hdr.spv-today { color: #1C1917; border-bottom-color: #C4873A; }
+
+/* Calendar block cards */
+.spv-block {
+  border-radius: 5px;
+  padding: 7px 8px;
+  margin-bottom: 5px;
+  position: relative;
+  break-inside: avoid;
+  border-left: 3px solid transparent;
+}
+.spv-block-time { font-size: 8px; opacity: 0.7; margin-bottom: 2px; letter-spacing: 0.2px; }
+.spv-block-name { font-size: 10px; font-weight: 600; line-height: 1.2; }
+.spv-block-meta { font-size: 8px; opacity: 0.65; margin-top: 2px; line-height: 1.3; }
+.spv-block-note { font-size: 8px; font-style: italic; opacity: 0.75; margin-top: 3px; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 3px; }
+.spv-block-dur { font-size: 7px; opacity: 0.5; margin-top: 2px; }
+
+.spv-empty { font-size: 8px; color: #ccc; font-style: italic; padding: 4px 0; }
+.spv-day-note { background: #f5f5f2; border-left: 2px solid #ddd; padding: 4px 6px; font-size: 8px; color: #888; margin-top: 4px; font-style: italic; border-radius: 0 3px 3px 0; }
+
+/* Summary bar */
+.spv-summary { border-top: 1px solid #ddd; padding-top: 12px; margin-top: 8px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.spv-summary-item { font-size: 9px; color: #9C9489; display: flex; align-items: center; gap: 5px; }
+.spv-summary-dot { width: 7px; height: 7px; border-radius: 2px; flex-shrink: 0; }
+.spv-summary-total { font-size: 10px; font-weight: 600; color: #1C1917; margin-left: auto; }
+
+/* ── PRESET BUTTONS ── */
+.preset-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 10px; font-family: "Geist Mono", monospace; font-size: 10px; font-weight: 500;
+  border: 1px solid var(--faint); border-radius: 5px; background: var(--paper2);
+  color: var(--ink); cursor: pointer; transition: all 0.12s; min-width: 66px;
+}
+.preset-btn span { font-size: 8px; color: var(--muted); font-weight: 300; }
+.preset-btn:hover { border-color: var(--ink); background: var(--paper); }
+.preset-btn.active { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.preset-btn.active span { color: rgba(255,255,255,0.6); }
+
+/* ── LIVE API ── */
+.live-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 8px; letter-spacing: 0.8px; text-transform: uppercase; color: #5D9E6A; padding: 2px 7px; border: 1px solid #5D9E6A; border-radius: 20px; }
+.live-dot { width: 5px; height: 5px; border-radius: 50%; background: #5D9E6A; animation: pulse 2s infinite; }
+.loading-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 8px; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); padding: 2px 7px; border: 1px solid var(--faint); border-radius: 20px; }
+.loading-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); animation: pulse 1s infinite; }
+.error-badge { font-size: 8px; color: #9B3A3A; padding: 2px 7px; border: 1px solid #E8AAAA; border-radius: 20px; background: #FDF0F0; }
+.spots-tag { font-size: 7px; padding: 1px 4px; border-radius: 2px; margin-top: 2px; display: inline-block; font-weight: 500; letter-spacing: 0.3px; }
+.spots-ok { background: #E8F5E9; color: #2E7D32; }
+.spots-low { background: #FFF3E0; color: #E65100; }
+.spots-full { background: #FCE4EC; color: #880E4F; }
+.pill.live-class { position: relative; }
+.refresh-live-btn { font-size: 9px; background: none; border: none; cursor: pointer; color: var(--muted); padding: 0 4px; vertical-align: middle; }
+.refresh-live-btn:hover { color: var(--ink); }
+
+/* ── WEEK NAV ── */
+.week-nav { display: flex; align-items: center; gap: 6px; }
+.week-btn { font-family: "Geist Mono", monospace; font-size: 13px; background: none; border: 1px solid var(--faint); border-radius: 3px; color: var(--muted); cursor: pointer; padding: 2px 8px; line-height: 1; transition: all 0.12s; }
+.week-btn:hover { border-color: var(--ink); color: var(--ink); }
+.today-btn { font-size: 9px; letter-spacing: 0.6px; text-transform: uppercase; padding: 4px 8px; }
+.week-label { font-size: 10px; letter-spacing: 0.5px; color: var(--ink); min-width: 160px; text-align: center; }
+
+/* ── PILL HIDE BUTTON (manual pills only) ── */
+.pill-hide-btn {
+  position: absolute; top: 2px; right: 2px;
+  font-size: 11px; line-height: 1; padding: 3px 5px;
+  background: rgba(0,0,0,0.08); border: none; border-radius: 3px;
+  color: var(--ink); cursor: pointer; opacity: 0;
+  transition: opacity 0.1s;
+  font-family: inherit;
+  z-index: 10;
+  pointer-events: all;
+}
+.pill:hover .pill-hide-btn { opacity: 1; }
+.pill-hide-btn:hover { background: rgba(0,0,0,0.2); }
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="wordmark">my studios <span>May 2026</span></div>
+  <div id="liveBadge" class="loading-badge"><div class="loading-dot"></div>Connecting…</div>
+  <div class="studios-legend">
+    <div class="leg"><div class="leg-swatch p"></div>Pilates</div>
+    <div class="leg"><div class="leg-swatch h"></div>Yoga — H</div>
+    <div class="leg"><div class="leg-swatch s"></div>Yoga — S</div>
+    <div class="leg"><div class="leg-swatch str"></div>Strength</div>
+    <div class="leg"><div class="leg-swatch rn"></div>Run</div>
+    
+  </div>
+</header>
+
+<div class="controls">
+  <div class="week-nav">
+    <button class="week-btn" onclick="shiftWeek(-1)">&#8249;</button>
+    <span class="week-label" id="weekLabel">—</span>
+    <button class="week-btn" onclick="shiftWeek(1)">&#8250;</button>
+    <button class="week-btn today-btn" onclick="goToToday()">Today</button>
+  </div>
+  <div class="sep"></div>
+  <div class="day-tabs" id="dayTabs">
+    <button class="tab active" data-day="all">All</button>
+    <button class="tab" data-day="0">Mon</button>
+    <button class="tab" data-day="1">Tue</button>
+    <button class="tab" data-day="2">Wed</button>
+    <button class="tab" data-day="3">Thu</button>
+    <button class="tab" data-day="4">Fri</button>
+    <button class="tab" data-day="5">Sat</button>
+    <button class="tab" data-day="6">Sun</button>
+  </div>
+  <div class="sep"></div>
+  <div class="filter-group">
+    <button class="filt" id="fP"  onclick="toggleFilter('pilates')"><span class="dot dot-p"></span>Pilates</button>
+    <button class="filt" id="fH"  onclick="toggleFilter('harajuku')"><span class="dot dot-h"></span>Yoga — H</button>
+    <button class="filt" id="fS"  onclick="toggleFilter('shimo')"><span class="dot dot-s"></span>Yoga — S</button>
+    <button class="filt" id="fSTR" onclick="toggleFilter('strength')"><span class="dot dot-str"></span>Strength</button>
+    <button class="filt" id="fRN" onclick="toggleFilter('run')"><span class="dot dot-rn"></span>Run</button>
+    <button class="filt" id="fLAB" onclick="toggleFilter('lab')"><span class="dot dot-lab"></span>Ignite Lab</button>
+  </div>
+  <div class="right-controls">
+    <button class="panel-toggle" id="panelToggle" onclick="togglePanel()">⇥ Schedule</button>
+    <button class="panel-toggle" onclick="refreshLive()" title="Refresh live schedule">↻ Live</button>
+    <button class="panel-toggle add-block-btn" onclick="openModal()">+ Block</button>
+    <button class="panel-toggle" onclick="exportPDF()">↓ PDF</button>
+  </div>
+</div>
+
+<div class="body-wrap">
+  <!-- Calendar -->
+  <div class="cal-wrap">
+    <div class="grid" id="schedGrid"></div>
+    <div class="tbd-strip" id="tbdStrip">
+      <div class="tbd-label">TBD</div>
+      <div class="pill strength" data-id="self-tbd" style="margin:0;cursor:pointer;" onclick="toggleBank('self-tbd', null)">
+        <div class="pill-time">Day not yet decided · 60 min</div>
+        <div class="pill-name">Self Training</div>
+        <div class="pill-instructor">Solo · Strength</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Planning panel -->
+  <div class="side-panel closed" id="sidePanel">
+    <div class="panel-header">
+      <div class="panel-title">My Schedule</div>
+      <div class="panel-sub">Click any class to add or remove</div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="panel-add-block-btn" style="margin:0;flex:1" onclick="openPanelBlock()">+ Add block</button>
+        <button class="panel-add-block-btn" style="margin:0;flex:1;border-color:var(--ink);color:var(--ink)" onclick="exportSchedulePDF()">↓ Export PDF</button>
+      </div>
+    </div>
+    <div class="panel-days" id="panelDays"></div>
+    <div class="panel-footer">
+      <div class="panel-section-title">Weekly hours</div>
+      <div id="panelHours"></div>
+      <div class="panel-section-title" id="conflictTitle" style="color:#9B3A3A;display:none">⚠ Conflicts</div>
+      <div class="conflict-list" id="conflictList"></div>
+      <div class="panel-section-title">Total</div>
+      <div class="panel-stats" id="panelStats"></div>
+      <button class="clear-btn" onclick="clearPlan()">Clear all</button>
+
+      <!-- Google Calendar Integration -->
+      <div style="margin-top:12px;border-top:1px solid var(--faint);padding-top:12px">
+        <div style="font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Google Calendar</div>
+        <div id="gcal-status" style="font-size:9px;color:var(--muted);margin-bottom:7px;font-style:italic">Not connected</div>
+        <button id="gcal-auth-btn" class="clear-btn" style="margin-top:0;border-color:var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px" onclick="gcalConnect()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Connect Google Calendar
+        </button>
+        <button id="gcal-export-btn" class="clear-btn" style="margin-top:6px;display:none;background:var(--ink);color:var(--paper);border-color:var(--ink)" onclick="gcalExportPlan()">
+          ↑ Send plan to Google Calendar
+        </button>
+        <button id="gcal-disconnect-btn" class="clear-btn" style="margin-top:6px;display:none;color:#9B3A3A;border-color:#E8AAAA" onclick="gcalDisconnect()">
+          Disconnect
+        </button>
+        <div id="gcal-result" style="font-size:9px;margin-top:7px;line-height:1.6;display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Add Block Modal -->
+<div class="modal-overlay hidden" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-title">Add a block</div>
+    <label>Label</label>
+    <input type="text" id="blockLabel" placeholder="e.g. Transit, Lunch, Work…">
+    <label>Day</label>
+    <select id="blockDay">
+      <option value="0">Monday</option>
+      <option value="1">Tuesday</option>
+      <option value="2">Wednesday</option>
+      <option value="3">Thursday</option>
+      <option value="4">Friday</option>
+      <option value="5">Saturday</option>
+      <option value="6">Sunday</option>
+    </select>
+    <label>Start time</label>
+    <input type="time" id="blockStart" value="09:00">
+    <label>Duration (minutes)</label>
+    <input type="text" id="blockDur" placeholder="e.g. 30" value="30">
+    <label>Colour</label>
+    <div class="color-row" id="colorRow">
+      <div class="color-opt selected" data-color="#E8E0D4" style="background:#E8E0D4"></div>
+      <div class="color-opt" data-color="#FDEBD0" style="background:#FDEBD0"></div>
+      <div class="color-opt" data-color="#D5E8D4" style="background:#D5E8D4"></div>
+      <div class="color-opt" data-color="#DAE8FC" style="background:#DAE8FC"></div>
+      <div class="color-opt" data-color="#E1D5E7" style="background:#E1D5E7"></div>
+      <div class="color-opt" data-color="#FFE6CC" style="background:#FFE6CC"></div>
+      <div class="color-opt" data-color="#F8CECC" style="background:#F8CECC"></div>
+      <div class="color-opt" data-color="#D5E8D4" style="background:#B3D9C7"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveBlock()">Add block</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit / Note modal for plan pills -->
+<div class="edit-modal-overlay hidden" id="editModalOverlay" onclick="closeEditModalOutside(event)">
+  <div class="edit-modal">
+    <div class="edit-modal-title" id="editModalTitle">Edit block</div>
+    <div class="edit-modal-sub" id="editModalSub"></div>
+    <label>Override label</label>
+    <input type="text" id="editLabel" placeholder="Leave blank to keep original">
+    <label>Note (instructor change, reminder, etc.)</label>
+    <textarea id="editNote" placeholder="e.g. Instructor changed to Meg · Bring grip socks"></textarea>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="modal-btn secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Panel add block modal -->
+<div class="panel-block-overlay hidden" id="panelBlockOverlay" onclick="closePanelBlockOutside(event)">
+  <div class="modal" id="panelBlockModal" style="width:320px">
+    <div class="modal-title">Add block to schedule</div>
+
+    <!-- Quick presets -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px">Quick add</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="preset-btn" onclick="applyPreset('transit')" data-preset="transit">
+          🚃 Transit<span>30 min</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('lunch')" data-preset="lunch">
+          🍱 Lunch<span>60 min</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('work')" data-preset="work">
+          💻 Work<span>custom</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('coffee')" data-preset="coffee">
+          ☕ Coffee<span>30 min</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('rest')" data-preset="rest">
+          😴 Rest<span>60 min</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('custom')" data-preset="custom">
+          ✏️ Custom<span>—</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--faint);margin-bottom:12px"></div>
+
+    <label>Label</label>
+    <input type="text" id="pbLabel" placeholder="e.g. Transit, Lunch…">
+    <label>Day</label>
+    <select id="pbDay">
+      <option value="0">Monday</option><option value="1">Tuesday</option>
+      <option value="2">Wednesday</option><option value="3">Thursday</option>
+      <option value="4">Friday</option><option value="5">Saturday</option>
+      <option value="6">Sunday</option>
+    </select>
+    <label>Time</label>
+    <input type="time" id="pbTime" value="09:00">
+    <label>Duration (min)</label>
+    <input type="text" id="pbDur" value="30" id="pbDur">
+    <label>Note</label>
+    <input type="text" id="pbNote" placeholder="Optional note">
+    <label>Colour</label>
+    <div class="color-row" id="pbColorRow">
+      <div class="color-opt selected" data-color="#E8E0D4" style="background:#E8E0D4"></div>
+      <div class="color-opt" data-color="#FDEBD0" style="background:#FDEBD0"></div>
+      <div class="color-opt" data-color="#D5E8D4" style="background:#D5E8D4"></div>
+      <div class="color-opt" data-color="#DAE8FC" style="background:#DAE8FC"></div>
+      <div class="color-opt" data-color="#E1D5E7" style="background:#E1D5E7"></div>
+      <div class="color-opt" data-color="#FFE6CC" style="background:#FFE6CC"></div>
+      <div class="color-opt" data-color="#F8CECC" style="background:#F8CECC"></div>
+      <div class="color-opt" data-color="#B3D9C7" style="background:#B3D9C7"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closePanelBlock()">Cancel</button>
+      <button class="modal-btn primary" onclick="savePanelBlock()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule PDF print view -->
+<div id="schedulePrintView"></div>
+
+</div><!-- .app -->
+
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const todayDow = (new Date().getDay() + 6) % 7; // static for today detection
+
+const CLASSES = [
+  // ── PILATES — Taeko only ─────────────────────────────────
+  {id:'p1c',day:1,time:'11:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p1e',day:1,time:'19:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p2b',day:2,time:'10:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p2d',day:2,time:'12:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p4a',day:4,time:'8:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p4c',day:4,time:'11:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p5c',day:5,time:'11:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p5f',day:5,time:'14:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p6d',day:6,time:'11:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+  {id:'p6e',day:6,time:'12:00',dur:50,name:'Reformer',instructor:'Taeko',studio:'pilates'},
+
+  // ── PERSONAL TRAINING ─────────────────────────────────────
+  {id:'pt1',day:1,time:'9:00',dur:60,name:'Personal Training',instructor:'Goodage Gym',studio:'strength'},
+  {id:'pt3',day:3,time:'9:00',dur:60,name:'Personal Training',instructor:'Goodage Gym',studio:'strength'},
+
+  // ── RUNNING ───────────────────────────────────────────────
+  {id:'rn0',day:0,time:'20:15',dur:105,name:'080 Harajuku',instructor:'Monday night run',studio:'run'},
+  {id:'rn5',day:5,time:'9:00',dur:120,name:'Doyou Club',instructor:'Yoyogi Park',studio:'run'},
+  {id:'rn6a',day:6,time:'8:00',dur:120,name:'Lululemon Run Club',instructor:'Aoyama',studio:'run'},
+  {id:'rn6b',day:6,time:'12:45',dur:120,name:'KNCT Tokyo',instructor:'Sunday run',studio:'run'},
+];
+
+const SELF_CLASS = {id:'self-tbd',day:null,time:'TBD',dur:60,name:'Self Training',instructor:'Solo session',studio:'strength',tbd:true};
+
+// ─────────────────────────────────────────────────────────────
+// WEEK NAVIGATION
+// ─────────────────────────────────────────────────────────────
+// weekOffset: 0 = current week, 1 = next week, -1 = last week
+let weekOffset = 0;
+let _buildGridRunning = false;
+
+function getWeekStart() {
+  // Returns the Monday of the current displayed week as a Date (JST midnight)
+  const nowUTC = new Date();
+  const nowJST = new Date(nowUTC.getTime() + 9 * 60 * 60 * 1000);
+  // Use JST day-of-week
+  const dow = (nowJST.getUTCDay() + 6) % 7; // 0=Mon
+  const monday = new Date(nowJST);
+  monday.setUTCDate(nowJST.getUTCDate() - dow + weekOffset * 7);
+  monday.setUTCHours(0, 0, 0, 0);
+  // Return as local Date with correct year/month/day
+  return new Date(monday.getUTCFullYear(), monday.getUTCMonth(), monday.getUTCDate());
+}
+
+function getWeekDate(dayIndex) {
+  // Returns Date for column dayIndex (0=Mon) in the displayed week
+  const mon = getWeekStart();
+  const d = new Date(mon);
+  d.setDate(mon.getDate() + dayIndex);
+  return d;
+}
+
+function isSameDay(a, b) {
+  return a.getFullYear() === b.getFullYear() &&
+         a.getMonth() === b.getMonth() &&
+         a.getDate() === b.getDate();
+}
+
+function updateWeekLabel() {
+  const mon = getWeekDate(0);
+  const sun = getWeekDate(6);
+  const fmt = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const el = document.getElementById('weekLabel');
+  if (el) el.textContent = fmt(mon) + ' – ' + fmt(sun);
+}
+
+function shiftWeek(dir) {
+  weekOffset += dir;
+  updateWeekLabel();
+  buildGrid();
+  // Always re-inject live classes for the new week
+  if (liveLoaded) {
+    injectLiveClasses();
+    // If no data for this week, fetch more
+    const needDate = getWeekDate(0);
+    const hasData = liveClasses.some(c => {
+      if (!c.rawDate) return false;
+      const clsDateStr = (function(iso) {
+        const d = new Date(iso);
+        const jst = new Date(d.getTime() + 9*60*60*1000);
+        return jst.getUTCFullYear()+'-'+String(jst.getUTCMonth()+1).padStart(2,'0')+'-'+String(jst.getUTCDate()).padStart(2,'0');
+      })(c.rawDate);
+      const needStr = needDate.getFullYear()+'-'+String(needDate.getMonth()+1).padStart(2,'0')+'-'+String(needDate.getDate()).padStart(2,'0');
+      return clsDateStr >= needStr;
+    });
+    if (!hasData) fetchLiveSchedule();
+  }
+}
+
+function goToToday() {
+  weekOffset = 0;
+  updateWeekLabel();
+  buildGrid();
+}
+
+// ─────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────
+let activeDay = 'all';
+let activeFilters = new Set();
+let panelOpen = false;
+// bank: { dayIndex: [classId, ...] }
+let bank = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]};
+// dayNotes: {dayIndex: string}
+let dayNotes = {0:'',1:'',2:'',3:'',4:'',5:'',6:''};
+// planOverrides: {classId: {label, note}}
+let planOverrides = {};
+// panelCustomBlocks: [{id,day,time,dur,label,color,note}]
+let panelCustomBlocks = [];
+let pbSelectedColor = '#E8E0D4';
+let editingId = null;
+let editingDay = null;
+let editingPanelBlockId = null;
+
+// ─────────────────────────────────────────────────────────────
+// TIME UTILS
+// ─────────────────────────────────────────────────────────────
+function timeToMins(t) {
+  if (!t || t==='TBD') return 9999;
+  const [h,m] = t.split(':').map(Number);
+  return h*60+(m||0);
+}
+
+const TIME_SLOTS = [
+  '7:00','7:30','7:45','8:00','8:45','9:00','9:30','10:00','11:00','11:15','11:30',
+  '12:00','12:30','12:45','13:00','14:00','15:00','15:30','16:00','17:00',
+  '18:00','18:30','19:00','19:30','20:00','20:15','20:45'
+];
+
+// ─────────────────────────────────────────────────────────────
+// RENDER CALENDAR
+// ─────────────────────────────────────────────────────────────
+// Track manually hidden pills
+const hiddenManualIds = new Set();
+
+function buildPill(cls) {
+  if (hiddenManualIds.has(cls.id)) return null; // user hid this pill
+  const inBank = Object.entries(bank).some(([d,arr]) => arr.includes(cls.id));
+  const el = document.createElement('div');
+  el.className = `pill ${cls.studio}${inBank ? ' banked' : ''}`;
+  el.dataset.id = cls.id;
+  el.dataset.studio = cls.studio; // always set for applyFilters
+  el.title = inBank ? 'In your schedule — click to remove' : 'Click to add to your schedule';
+  el.style.cursor = 'pointer';
+  el.style.position = 'relative';
+  el.innerHTML = `
+    ${cls.time!=='TBD'?`<div class="pill-time">${cls.time}${cls.dur?` · ${cls.dur}m`:''}</div>`:''}
+    <div class="pill-name">${cls.name}</div>
+    ${cls.instructor?`<div class="pill-instructor">${cls.instructor}</div>`:''}
+    <button class="pill-hide-btn" title="Hide this class" onmousedown="hideManualPill(event,'${cls.id}')">✕</button>
+  `;
+  el.addEventListener('click', () => toggleBank(cls.id, cls.day));
+  return el;
+}
+
+function hideManualPill(e, id) {
+  e.stopPropagation();
+  e.preventDefault();
+  hiddenManualIds.add(id);
+  // Also remove from bank if it was added
+  Object.keys(bank).forEach(d => {
+    bank[d] = bank[d].filter(cid => cid !== id);
+  });
+  buildGrid();
+  if (panelOpen) buildPanel();
+}
+
+function buildGrid() {
+  if (_buildGridRunning) return;
+  _buildGridRunning = true;
+  const grid = document.getElementById('schedGrid');
+  grid.innerHTML = '';
+
+  // Header — show day name + date for current week
+  const corner = document.createElement('div');
+  corner.className = 'gh';
+  grid.appendChild(corner);
+  DAYS.forEach((d,i) => {
+    const cellDate = getWeekDate(i); // Date object for this column
+    const isToday = isSameDay(cellDate, new Date());
+    const hdr = document.createElement('div');
+    hdr.className = 'gh'+(isToday?' today-col':'');
+    hdr.dataset.col = i;
+    const dateStr = cellDate.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    hdr.innerHTML = '<div>' + d + '</div><div style="font-size:8px;opacity:0.6;margin-top:1px">' + dateStr + '</div>';
+    grid.appendChild(hdr);
+  });
+
+  TIME_SLOTS.forEach(slot => {
+    const slotMins = timeToMins(slot);
+    const tl = document.createElement('div');
+    tl.className = 'time-label';
+    tl.textContent = slot;
+    grid.appendChild(tl);
+
+    DAYS.forEach((d,i) => {
+      const cell = document.createElement('div');
+      cell.className = 'day-cell'+(i===todayDow?' today-col':'');
+      cell.dataset.col = i;
+      const dayClasses = CLASSES.filter(c => c.day===i && timeToMins(c.time)===slotMins);
+      dayClasses.forEach(cls => { const p = buildPill(cls); if (p) cell.appendChild(p); });
+      grid.appendChild(cell);
+    });
+  });
+
+  _buildGridRunning = false;
+  applyFilters();
+}
+
+function applyFilters() {
+  document.querySelectorAll('[data-col]').forEach(el => {
+    const col = parseInt(el.dataset.col);
+    el.style.display = (activeDay==='all' || parseInt(activeDay)===col) ? '' : 'none';
+  });
+  document.querySelectorAll('#schedGrid .pill').forEach(pill => {
+    const studio = pill.dataset.studio;
+    if (!studio) return;
+    const studioOk = activeFilters.size===0 || activeFilters.has(studio);
+    pill.classList.toggle('hidden', !studioOk);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// RENDER PANEL
+// ─────────────────────────────────────────────────────────────
+function buildPanel() {
+  const container = document.getElementById('panelDays');
+  container.innerHTML = '';
+
+  // TBD self-training at top if banked
+  const selfBanked = Object.values(bank).flat().includes('self-tbd');
+
+  // Unscheduled (TBD) section
+  const tbdDay = Object.entries(bank).find(([d,arr]) => arr.includes('self-tbd'));
+
+  DAYS.forEach((d,i) => {
+    const dayItems = bank[i] || [];
+    const dayEl = document.createElement('div');
+    dayEl.className = 'panel-day';
+
+    const count = dayItems.length;
+    const hdr = document.createElement('div');
+    hdr.className = 'panel-day-header'+(i===todayDow?' today-day':'');
+    hdr.innerHTML = `<span>${d}</span><span style="font-size:8px;color:var(--faint)">${count ? count+' class'+(count>1?'es':'') : ''}</span>`;
+    dayEl.appendChild(hdr);
+
+    const zone = document.createElement('div');
+    zone.className = 'panel-drop-zone';
+
+    // Merge classes + custom blocks, sort chronologically
+    const allItems = [];
+    dayItems.forEach(cid => {
+      const cls = CLASSES.find(c=>c.id===cid) || liveClasses.find(c=>c.id===cid);
+      if (cls) allItems.push({type:'class', cid, cls, sortMins: timeToMins(cls.time)});
+    });
+    panelCustomBlocks.filter(b => b.day === i).forEach(pcb => {
+      allItems.push({type:'block', pcb, sortMins: timeToMins(pcb.time)});
+    });
+    allItems.sort((a,b) => a.sortMins - b.sortMins);
+
+    if (allItems.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'panel-empty';
+      empty.textContent = 'no classes added';
+      zone.appendChild(empty);
+    } else {
+      allItems.forEach(item => {
+        if (item.type === 'class') {
+          const {cid, cls} = item;
+          const overrides = planOverrides[cid] || {};
+          const pp = document.createElement('div');
+          pp.className = `plan-pill ${cls.studio}`;
+          pp.innerHTML = `
+            <div class="plan-pill-name">${overrides.label || cls.name}</div>
+            <div class="plan-pill-sub">${cls.time!=='TBD'?cls.time+' · ':''} ${cls.instructor||''}</div>
+            ${overrides.note ? `<div class="plan-pill-note">${overrides.note}</div>` : ''}
+            <div class="pill-actions">
+              <button title="Edit / add note" onclick="openEditModal('${cid}','${i}')">✎</button>
+              <button title="Remove" onclick="removePlanById('${cid}',${i})">×</button>
+            </div>
+          `;
+          zone.appendChild(pp);
+        } else {
+          const {pcb} = item;
+          const pb = document.createElement('div');
+          pb.className = 'panel-custom-block';
+          pb.style.background = pcb.color;
+          pb.style.borderLeft = `2px solid ${pcb.color}`;
+          pb.style.filter = 'brightness(0.88)';
+          pb.innerHTML = `
+            <div class="plan-pill-name">${pcb.label}</div>
+            <div class="plan-pill-sub">${pcb.time} · ${pcb.dur}min</div>
+            ${pcb.note ? `<div class="plan-pill-note">${pcb.note}</div>` : ''}
+            <div class="pill-actions">
+              <button title="Edit" onclick="openPanelBlockEdit('${pcb.id}')">✎</button>
+              <button title="Remove" onclick="deletePanelBlock('${pcb.id}')">×</button>
+            </div>
+          `;
+          zone.appendChild(pb);
+        }
+      });
+    }
+    dayEl.appendChild(zone);
+    // Notes textarea
+    const noteWrap = document.createElement('div');
+    noteWrap.className = 'day-note-wrap';
+    const note = document.createElement('textarea');
+    note.className = 'day-note';
+    note.rows = 2;
+    note.placeholder = 'Notes for ' + d + '…';
+    note.dataset.day = i;
+    note.value = dayNotes[i] || '';
+    note.addEventListener('input', () => { dayNotes[i] = note.value; });
+    noteWrap.appendChild(note);
+    dayEl.appendChild(noteWrap);
+
+    container.appendChild(dayEl);
+  });
+
+  updateStats();
+  updateHours();
+  updateConflicts();
+  // Refresh banked state on calendar pills
+  document.querySelectorAll('#schedGrid .pill').forEach(pill => {
+    const inBank = Object.values(bank).some(arr=>arr.includes(pill.dataset.id));
+    pill.classList.toggle('banked', inBank);
+    pill.title = inBank ? 'In your schedule — click to remove' : 'Click to add to your schedule';
+  });
+  // TBD pill
+  const tbdPill = document.querySelector('#tbdStrip .pill');
+  if (tbdPill) {
+    const inBank = Object.values(bank).flat().includes('self-tbd');
+    tbdPill.classList.toggle('banked', inBank);
+  }
+}
+
+function updateStats() {
+  const total = Object.values(bank).reduce((s,a)=>s+a.length,0);
+  const byStudio = {};
+  Object.values(bank).flat().forEach(cid => {
+    const cls = cid==='self-tbd'?SELF_CLASS:CLASSES.find(c=>c.id===cid);
+    if (cls) byStudio[cls.studio] = (byStudio[cls.studio]||0)+1;
+  });
+  const lines = [`<strong>${total}</strong> class${total!==1?'es':''} planned`];
+  Object.entries(byStudio).forEach(([s,n])=>{
+    const label={pilates:'Pilates',harajuku:'Yoga — H',shimo:'Yoga — S',strength:'Strength',run:'Running',lab:'Ignite Lab'}[s]||s;
+    lines.push(`${n} × ${label}`);
+  });
+  document.getElementById('panelStats').innerHTML = lines.join('<br>');
+}
+
+function updateHours() {
+  const byStudio = {};
+  let totalMins = 0;
+  Object.values(bank).flat().forEach(cid => {
+    const cls = CLASSES.find(c=>c.id===cid) || liveClasses.find(c=>c.id===cid);
+    if (!cls) return;
+    const mins = cls.dur || 0;
+    const label = {pilates:'Pilates',harajuku:'Yoga — H',shimo:'Yoga — S',strength:'Strength',run:'Running',lab:'Ignite Lab'}[cls.studio] || cls.studio;
+    byStudio[label] = (byStudio[label]||0) + mins;
+    totalMins += mins;
+  });
+  const el = document.getElementById('panelHours');
+  if (Object.keys(byStudio).length === 0) {
+    el.innerHTML = '<div style="font-size:9px;color:var(--faint);font-style:italic">No classes added yet</div>';
+    return;
+  }
+  el.innerHTML = Object.entries(byStudio).map(([label, mins]) => {
+    const h = Math.floor(mins/60), m = mins%60;
+    const disp = h>0 ? (m>0?`${h}h ${m}m`:`${h}h`) : `${m}m`;
+    return `<div class="hours-row"><span class="hours-label">${label}</span><span class="hours-val">${disp}</span></div>`;
+  }).join('') +
+  `<div class="hours-row" style="margin-top:4px;border-top:1px solid var(--faint);padding-top:4px">
+    <span class="hours-label" style="color:var(--ink);font-weight:500">Total</span>
+    <span class="hours-val">${Math.floor(totalMins/60)}h ${totalMins%60>0?totalMins%60+'m':''}</span>
+  </div>`;
+}
+
+function updateConflicts() {
+  const conflicts = [];
+  // For each day, check if any two banked classes overlap
+  Object.entries(bank).forEach(([dayIdx, ids]) => {
+    const day = parseInt(dayIdx);
+    const items = ids.map(cid => {
+      const cls = CLASSES.find(c=>c.id===cid) || liveClasses.find(c=>c.id===cid);
+      return cls ? {id:cid, start: timeToMins(cls.time), end: timeToMins(cls.time)+(cls.dur||50), name:cls.name, time:cls.time} : null;
+    }).filter(Boolean).sort((a,b)=>a.start-b.start);
+
+    for (let i=0; i<items.length-1; i++) {
+      for (let j=i+1; j<items.length; j++) {
+        if (items[j].start < items[i].end) {
+          conflicts.push(`${DAYS[day]}: ${items[i].name} (${items[i].time}) ↔ ${items[j].name} (${items[j].time})`);
+        }
+      }
+    }
+  });
+
+  const titleEl = document.getElementById('conflictTitle');
+  const listEl = document.getElementById('conflictList');
+  const hasCon = conflicts.length > 0;
+  titleEl.style.display = hasCon ? '' : 'none';
+  listEl.innerHTML = conflicts.map(c => `<div class="conflict-badge">⚠ ${c}</div>`).join('');
+
+  // Mark conflicting pills on calendar
+  document.querySelectorAll('#schedGrid .pill').forEach(p => p.classList.remove('conflict'));
+  Object.entries(bank).forEach(([dayIdx, ids]) => {
+    const day = parseInt(dayIdx);
+    const items = ids.map(cid => {
+      const cls = cid==='self-tbd'?SELF_CLASS:CLASSES.find(c=>c.id===cid);
+      return cls ? {id:cid, start:timeToMins(cls.time), end:timeToMins(cls.time)+(cls.dur||50)} : null;
+    }).filter(Boolean);
+    ids.forEach(cid => {
+      const cls = cid==='self-tbd'?SELF_CLASS:CLASSES.find(c=>c.id===cid);
+      if (!cls) return;
+      const start = timeToMins(cls.time), end = start+(cls.dur||50);
+      const hasConflict = items.some(other => other.id!==cid && other.start<end && other.end>start);
+      if (hasConflict) {
+        document.querySelectorAll(`#schedGrid .pill[data-id="${cid}"]`).forEach(p=>p.classList.add('conflict'));
+      }
+    });
+  });
+}
+
+function removePlan(btn) {
+  const cid = btn.dataset.id;
+  const day = parseInt(btn.dataset.day);
+  bank[day] = bank[day].filter(id=>id!==cid);
+  buildPanel();
+  buildGrid();
+}
+function removePlanById(cid, day) {
+  bank[day] = bank[day].filter(id=>id!==cid);
+  delete planOverrides[cid];
+  buildPanel();
+  buildGrid();
+}
+
+function clearPlan() {
+  bank = {0:[],1:[],2:[],3:[],4:[],5:[],6:[]};
+  buildPanel();
+  buildGrid();
+}
+
+// ─────────────────────────────────────────────────────────────
+// TOGGLE BANK
+// ─────────────────────────────────────────────────────────────
+function toggleBank(id, defaultDay) {
+  // Find if it's already banked somewhere
+  const existingDay = Object.entries(bank).find(([d,arr]) => arr.includes(id));
+  if (existingDay) {
+    // Remove it
+    bank[existingDay[0]] = bank[existingDay[0]].filter(cid => cid !== id);
+  } else {
+    // Add it to its natural day (or day 0 for TBD)
+    const day = (defaultDay !== null && defaultDay !== undefined) ? defaultDay : 0;
+    if (!bank[day]) bank[day] = [];
+    bank[day].push(id);
+    bank[day].sort((a,b) => {
+      const ca = CLASSES.find(c=>c.id===a) || liveClasses.find(c=>c.id===a);
+      const cb = CLASSES.find(c=>c.id===b) || liveClasses.find(c=>c.id===b);
+      return timeToMins(ca?.time||'0:00')-timeToMins(cb?.time||'0:00');
+    });
+  }
+  if (panelOpen) buildPanel();
+  else { updateConflicts(); }
+  // Update just the clicked pill + its banked state
+  document.querySelectorAll('.pill').forEach(pill => {
+    if (pill.dataset.id === id) {
+      const inBank = Object.values(bank).some(arr=>arr.includes(id));
+      pill.classList.toggle('banked', inBank);
+      pill.title = inBank ? 'In your schedule — click to remove' : 'Click to add to your schedule';
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// UI CONTROLS
+// ─────────────────────────────────────────────────────────────
+document.getElementById('dayTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if (!btn) return;
+  activeDay = btn.dataset.day;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b===btn));
+  applyFilters();
+});
+
+const filterMap   = {pilates:'fP',harajuku:'fH',shimo:'fS',strength:'fSTR',run:'fRN',lab:'fLAB'};
+const filterClass = {pilates:'on-p',harajuku:'on-h',shimo:'on-s',strength:'on-str',run:'on-rn',lab:'on-lab'};
+
+function toggleFilter(studio) {
+  const btn = document.getElementById(filterMap[studio]);
+  if (activeFilters.has(studio)) {
+    activeFilters.delete(studio);
+    btn.classList.remove(filterClass[studio]);
+  } else {
+    activeFilters.add(studio);
+    btn.classList.add(filterClass[studio]);
+  }
+  applyFilters();
+}
+
+
+function togglePanel() {
+  panelOpen = !panelOpen;
+  document.getElementById('sidePanel').classList.toggle('closed', !panelOpen);
+  document.getElementById('panelToggle').classList.toggle('on', panelOpen);
+  if (panelOpen) buildPanel();
+}
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+const todayTab = document.querySelector(`[data-day="${todayDow}"]`);
+if (todayTab) todayTab.classList.add('today-tab');
+
+updateWeekLabel();
+buildGrid();
+buildPanel();
+
+// ─────────────────────────────────────────────────────────────
+// CUSTOM BLOCKS
+// ─────────────────────────────────────────────────────────────
+let customBlocks = []; // {id, day, time, dur, label, color}
+let selectedColor = '#E8E0D4';
+
+function openModal() {
+  document.getElementById('modalOverlay').classList.remove('hidden');
+  document.getElementById('blockLabel').focus();
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.add('hidden');
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+document.getElementById('colorRow').addEventListener('click', e => {
+  const opt = e.target.closest('.color-opt');
+  if (!opt) return;
+  selectedColor = opt.dataset.color;
+  document.querySelectorAll('.color-opt').forEach(o => o.classList.toggle('selected', o === opt));
+});
+
+// Allow Enter key in modal
+document.getElementById('modal').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveBlock();
+  if (e.key === 'Escape') closeModal();
+});
+
+function saveBlock() {
+  const label = document.getElementById('blockLabel').value.trim();
+  if (!label) { document.getElementById('blockLabel').focus(); return; }
+  const day = parseInt(document.getElementById('blockDay').value);
+  const start = document.getElementById('blockStart').value || '09:00';
+  const dur = parseInt(document.getElementById('blockDur').value) || 30;
+  const id = 'cb_' + Date.now();
+
+  // Convert HH:MM to H:MM display
+  const [hh, mm] = start.split(':');
+  const displayTime = `${parseInt(hh)}:${mm}`;
+
+  customBlocks.push({id, day, time: displayTime, dur, label, color: selectedColor});
+
+  // Add to TIME_SLOTS if not present — just re-render
+  if (!TIME_SLOTS.includes(displayTime)) {
+    TIME_SLOTS.push(displayTime);
+    TIME_SLOTS.sort((a,b) => timeToMins(a) - timeToMins(b));
+    buildGrid();
+  } else {
+    renderCustomBlocks();
+  }
+
+  closeModal();
+  document.getElementById('blockLabel').value = '';
+  document.getElementById('blockStart').value = '09:00';
+  document.getElementById('blockDur').value = '30';
+}
+
+function renderCustomBlocks() {
+  // Remove existing custom block pills
+  document.querySelectorAll('.custom-block').forEach(el => el.remove());
+
+  customBlocks.forEach(cb => {
+    const slotMins = timeToMins(cb.time);
+    // Find matching cell
+    const cols = document.querySelectorAll(`.day-cell[data-col="${cb.day}"]`);
+    let targetCell = null;
+    document.querySelectorAll('.time-label').forEach((tl, i) => {
+      if (timeToMins(tl.textContent.trim()) === slotMins) {
+        // Get the corresponding day cell
+        const allCells = document.querySelectorAll('.day-cell');
+        const rowStart = i * 7;
+        targetCell = document.querySelectorAll(`.day-cell[data-col="${cb.day}"]`)[i];
+      }
+    });
+
+    // Better approach: find by index
+    const timeLabels = Array.from(document.querySelectorAll('.time-label'));
+    const slotIdx = timeLabels.findIndex(tl => timeToMins(tl.textContent.trim()) === slotMins);
+    if (slotIdx === -1) return;
+
+    const dayCells = document.querySelectorAll(`.day-cell[data-col="${cb.day}"]`);
+    const cell = dayCells[slotIdx];
+    if (!cell) return;
+
+    const block = document.createElement('div');
+    block.className = 'custom-block';
+    block.dataset.id = cb.id;
+    block.style.background = cb.color;
+    block.style.borderLeft = `2px solid ${cb.color}`;
+    block.style.filter = 'brightness(0.88)';
+    block.innerHTML = `
+      <div class="pill-time">${cb.time} · ${cb.dur}min</div>
+      <div class="pill-name">${cb.label}</div>
+      <button class="block-del" onclick="deleteBlock('${cb.id}')">×</button>
+    `;
+    cell.appendChild(block);
+  });
+}
+
+function deleteBlock(id) {
+  customBlocks = customBlocks.filter(cb => cb.id !== id);
+  renderCustomBlocks();
+}
+
+// renderCustomBlocks and injectLiveClasses now called directly in buildGrid
+
+// ─────────────────────────────────────────────────────────────
+// PDF EXPORT
+// ─────────────────────────────────────────────────────────────
+function exportPDF() {
+  window.print();
+}
+
+
+// ─────────────────────────────────────────────────────────────
+// EDIT MODAL (per plan pill)
+// ─────────────────────────────────────────────────────────────
+function openEditModal(cid, day) {
+  editingId = cid;
+  editingDay = day;
+  const cls = cid==='self-tbd'?SELF_CLASS:CLASSES.find(c=>c.id===cid);
+  const ov = planOverrides[cid] || {};
+  document.getElementById('editModalTitle').textContent = cls ? cls.name : 'Edit block';
+  document.getElementById('editModalSub').textContent = cls ? `${cls.time!=='TBD'?cls.time+' · ':''}${cls.instructor||''}` : '';
+  document.getElementById('editLabel').value = ov.label || '';
+  document.getElementById('editNote').value = ov.note || '';
+  document.getElementById('editModalOverlay').classList.remove('hidden');
+  document.getElementById('editNote').focus();
+}
+function closeEditModal() {
+  document.getElementById('editModalOverlay').classList.add('hidden');
+  editingId = null;
+}
+function closeEditModalOutside(e) {
+  if (e.target===document.getElementById('editModalOverlay')) closeEditModal();
+}
+function saveEdit() {
+  if (!editingId) return;
+  const label = document.getElementById('editLabel').value.trim();
+  const note  = document.getElementById('editNote').value.trim();
+  if (label || note) {
+    planOverrides[editingId] = { label: label||null, note: note||null };
+  } else {
+    delete planOverrides[editingId];
+  }
+  closeEditModal();
+  if (panelOpen) buildPanel();
+}
+document.getElementById('editModalOverlay').addEventListener('keydown', e => {
+  if (e.key==='Escape') closeEditModal();
+});
+
+// ─────────────────────────────────────────────────────────────
+// PANEL CUSTOM BLOCKS
+// ─────────────────────────────────────────────────────────────
+function openPanelBlock(prefillDay) {
+  if (prefillDay !== undefined) document.getElementById('pbDay').value = prefillDay;
+  document.getElementById('panelBlockOverlay').classList.remove('hidden');
+  document.getElementById('pbLabel').focus();
+  editingPanelBlockId = null;
+}
+function closePanelBlock() {
+  document.getElementById('panelBlockOverlay').classList.add('hidden');
+  document.getElementById('pbLabel').value='';
+  document.getElementById('pbNote').value='';
+  document.getElementById('pbDur').value='30';
+  document.getElementById('pbTime').value='09:00';
+  editingPanelBlockId=null;
+}
+function closePanelBlockOutside(e) {
+  if (e.target===document.getElementById('panelBlockOverlay')) closePanelBlock();
+}
+
+document.getElementById('pbColorRow').addEventListener('click', e => {
+  const opt = e.target.closest('.color-opt');
+  if (!opt) return;
+  pbSelectedColor = opt.dataset.color;
+  document.querySelectorAll('#pbColorRow .color-opt').forEach(o=>o.classList.toggle('selected',o===opt));
+});
+
+function savePanelBlock() {
+  const label = document.getElementById('pbLabel').value.trim();
+  if (!label) { document.getElementById('pbLabel').focus(); return; }
+  const day  = parseInt(document.getElementById('pbDay').value);
+  const t    = document.getElementById('pbTime').value||'09:00';
+  const [hh,mm] = t.split(':');
+  const displayTime = `${parseInt(hh)}:${mm}`;
+  const dur  = parseInt(document.getElementById('pbDur').value)||30;
+  const note = document.getElementById('pbNote').value.trim();
+
+  if (editingPanelBlockId) {
+    const idx = panelCustomBlocks.findIndex(b=>b.id===editingPanelBlockId);
+    if (idx>-1) panelCustomBlocks[idx] = {...panelCustomBlocks[idx], label, day, time:displayTime, dur, note, color:pbSelectedColor};
+  } else {
+    panelCustomBlocks.push({id:'pb_'+Date.now(), day, time:displayTime, dur, label, note, color:pbSelectedColor});
+  }
+  closePanelBlock();
+  if (panelOpen) buildPanel();
+}
+
+function openPanelBlockEdit(id) {
+  const b = panelCustomBlocks.find(pb=>pb.id===id);
+  if (!b) return;
+  editingPanelBlockId = id;
+  document.getElementById('pbDay').value = b.day;
+  const parts = b.time.split(':');
+  document.getElementById('pbTime').value = parts[0].padStart(2,'0')+':'+(parts[1]||'00');
+  document.getElementById('pbDur').value = b.dur;
+  document.getElementById('pbLabel').value = b.label;
+  document.getElementById('pbNote').value = b.note||'';
+  pbSelectedColor = b.color;
+  document.querySelectorAll('#pbColorRow .color-opt').forEach(o=>o.classList.toggle('selected',o.dataset.color===b.color));
+  document.getElementById('panelBlockOverlay').classList.remove('hidden');
+}
+
+function deletePanelBlock(id) {
+  panelCustomBlocks = panelCustomBlocks.filter(b=>b.id!==id);
+  if (panelOpen) buildPanel();
+}
+
+document.getElementById('panelBlockModal').addEventListener('keydown', e=>{
+  if(e.key==='Enter') savePanelBlock();
+  if(e.key==='Escape') closePanelBlock();
+});
+
+// ─────────────────────────────────────────────────────────────
+// SCHEDULE PDF EXPORT — Google Calendar style block layout
+// ─────────────────────────────────────────────────────────────
+const STUDIO_COLORS = {
+  pilates:  { bg: '#F2EAE7', border: '#C9967F', text: '#8B5E52' },
+  harajuku: { bg: '#E8F0E6', border: '#7CA870', text: '#4A6741' },
+  shimo:    { bg: '#E4EDF4', border: '#6A9AB8', text: '#3B5F7A' },
+  strength: { bg: '#EDE8F5', border: '#9B82C8', text: '#5C4A7A' },
+  run:      { bg: '#F5EAE6', border: '#C87A5A', text: '#7A3A2A' },
+  lab:      { bg: '#F5F0DC', border: '#C4A84A', text: '#6B5A28' },
+  custom:   { bg: '#F0EDE8', border: '#9C9489', text: '#5C5650' },
+};
+const STUDIO_LABELS = {
+  pilates:'Pilates', harajuku:'Yoga — H', shimo:'Yoga — S',
+  strength:'Strength', run:'Running', lab:'Ignite Lab', custom:'Block'
+};
+
+function fmtDur(mins) {
+  if (!mins) return '';
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? (m > 0 ? h + 'h ' + m + 'm' : h + 'h') : m + 'm';
+}
+
+function exportSchedulePDF() {
+  const totalItems = Object.values(bank).reduce((s,a)=>s+a.length,0) + panelCustomBlocks.length;
+  if (totalItems === 0) {
+    alert('Add some classes to your schedule first, then export.');
+    return;
+  }
+
+  const view = document.getElementById('schedulePrintView');
+  view.innerHTML = '';
+
+  // ── Header ──
+  const now = new Date();
+  const hdr = document.createElement('div');
+  hdr.className = 'spv-header';
+  hdr.innerHTML = `
+    <h1>my studios — weekly schedule</h1>
+    <p>May 2026 &nbsp;·&nbsp; Exported ${now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</p>
+  `;
+  view.appendChild(hdr);
+
+  // ── 7-column grid ──
+  const grid = document.createElement('div');
+  grid.className = 'spv-grid';
+
+  let totalMins = 0;
+  const byStudio = {};
+
+  DAYS.forEach((day, i) => {
+    const col = document.createElement('div');
+    col.className = 'spv-col';
+
+    const colDate = getWeekDate(i);
+    const isToday = isSameDay(colDate, new Date());
+    const colHdr = document.createElement('div');
+    colHdr.className = 'spv-col-hdr' + (isToday ? ' spv-today' : '');
+    const dateStr = colDate.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    colHdr.innerHTML = day + '<br><span style="font-size:8px;opacity:0.6;font-weight:300">' + dateStr + '</span>';
+    col.appendChild(colHdr);
+
+    // Collect + sort all items for the day
+    const items = [];
+    (bank[i]||[]).forEach(cid => {
+      const cls = CLASSES.find(c=>c.id===cid) || liveClasses.find(c=>c.id===cid);
+      if (!cls) return;
+      const ov = planOverrides[cid] || {};
+      items.push({
+        timeMins: timeToMins(cls.time), time: cls.time, dur: cls.dur,
+        name: ov.label || cls.name, instructor: cls.instructor || '',
+        note: ov.note || '', studio: cls.studio, color: null
+      });
+      const l = STUDIO_LABELS[cls.studio] || cls.studio;
+      byStudio[l] = (byStudio[l] || 0) + (cls.dur || 0);
+      totalMins += cls.dur || 0;
+    });
+    panelCustomBlocks.filter(b => b.day === i).forEach(b => {
+      items.push({
+        timeMins: timeToMins(b.time), time: b.time, dur: b.dur,
+        name: b.label, instructor: '', note: b.note || '',
+        studio: 'custom', color: b.color
+      });
+      totalMins += b.dur || 0;
+    });
+    items.sort((a,b) => a.timeMins - b.timeMins);
+
+    if (items.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'spv-empty';
+      empty.textContent = 'Rest';
+      col.appendChild(empty);
+    } else {
+      items.forEach(item => {
+        const sc = STUDIO_COLORS[item.studio] || STUDIO_COLORS.custom;
+        const bgColor = item.color || sc.bg;
+        const borderColor = item.color
+          ? (item.color === '#DAE8FC' ? '#6A9AB8' : item.color === '#FDEBD0' ? '#C87A5A' : '#9C9489')
+          : sc.border;
+        const textColor = sc.text;
+
+        const block = document.createElement('div');
+        block.className = 'spv-block';
+        block.style.cssText = `background:${bgColor};border-left-color:${borderColor};color:${textColor};`;
+
+        const durStr = fmtDur(item.dur);
+        block.innerHTML =
+          `<div class="spv-block-time">${item.time}${durStr ? ' · ' + durStr : ''}</div>` +
+          `<div class="spv-block-name">${item.name}</div>` +
+          (item.instructor ? `<div class="spv-block-meta">${item.instructor}</div>` : '') +
+          (item.note ? `<div class="spv-block-note">${item.note}</div>` : '');
+        col.appendChild(block);
+      });
+    }
+
+    // Day note
+    if (dayNotes[i] && dayNotes[i].trim()) {
+      const dn = document.createElement('div');
+      dn.className = 'spv-day-note';
+      dn.textContent = '✎ ' + dayNotes[i].trim();
+      col.appendChild(dn);
+    }
+
+    grid.appendChild(col);
+  });
+  view.appendChild(grid);
+
+  // ── Summary bar ──
+  const sumEl = document.createElement('div');
+  sumEl.className = 'spv-summary';
+  Object.entries(byStudio).forEach(([label, mins]) => {
+    const studio = Object.entries(STUDIO_LABELS).find(([,v])=>v===label)?.[0] || 'custom';
+    const sc = STUDIO_COLORS[studio] || STUDIO_COLORS.custom;
+    const item = document.createElement('div');
+    item.className = 'spv-summary-item';
+    item.innerHTML = `<div class="spv-summary-dot" style="background:${sc.border}"></div>${label}: ${fmtDur(mins)}`;
+    sumEl.appendChild(item);
+  });
+  const tot = document.createElement('div');
+  tot.className = 'spv-summary-total';
+  tot.textContent = 'Total: ' + fmtDur(totalMins);
+  sumEl.appendChild(tot);
+  view.appendChild(sumEl);
+
+  setTimeout(() => window.print(), 150);
+}
+
+// ─────────────────────────────────────────────────────────────
+// PRESETS
+// ─────────────────────────────────────────────────────────────
+const PRESETS = {
+  transit: { label: 'Transit',  dur: 30,  color: '#DAE8FC', note: '' },
+  lunch:   { label: 'Lunch',    dur: 60,  color: '#FDEBD0', note: '' },
+  work:    { label: 'Work',     dur: 120, color: '#E1D5E7', note: '', focusDur: true },
+  coffee:  { label: 'Coffee',   dur: 30,  color: '#FFE6CC', note: '' },
+  rest:    { label: 'Rest',     dur: 60,  color: '#D5E8D4', note: '' },
+  custom:  { label: '',         dur: 30,  color: '#E8E0D4', note: '', focusLabel: true },
+};
+
+function applyPreset(key) {
+  const p = PRESETS[key];
+  if (!p) return;
+
+  // Highlight active preset
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.preset === key);
+  });
+
+  if (p.label) document.getElementById('pbLabel').value = p.label;
+  document.getElementById('pbDur').value = p.dur;
+
+  // Set colour
+  pbSelectedColor = p.color;
+  document.querySelectorAll('#pbColorRow .color-opt').forEach(o => {
+    o.classList.toggle('selected', o.dataset.color === p.color);
+  });
+
+  // Focus the right field
+  setTimeout(() => {
+    if (p.focusDur) document.getElementById('pbDur').select();
+    else if (p.focusLabel) document.getElementById('pbLabel').focus();
+    else document.getElementById('pbTime').focus();
+  }, 50);
+}
+
+
+// ─────────────────────────────────────────────────────────────
+// LIVE MOMENCE API
+// ─────────────────────────────────────────────────────────────
+const MOMENCE_HOST_ID = 11184;
+const MOMENCE_BASE = 'https://readonly-api.momence.com/host-plugins/host/' + MOMENCE_HOST_ID + '/host-schedule/sessions';
+
+// Studio location mapping — Ignite has studio h (Harajuku) and studio s (Shimokitazawa)
+// We identify by location name in the API response
+// Location ID → studio mapping (from Momence API)
+// Returns false to skip, or studio string to include
+const LOCATION_ID_MAP = {
+  6623:   'harajuku',   // studio one (Harajuku)
+  6624:   'shimo',      // studio s (Shimokitazawa)
+  171678: 'lab',        // performance LAB with lululemon
+  165810: false,        // FREUDE by BMW — skip
+};
+
+function getStudioFromLocation(loc, locationId) {
+  // ID-based lookup first — most reliable
+  if (locationId !== undefined && locationId !== null) {
+    const mapped = LOCATION_ID_MAP[locationId];
+    if (mapped === false) return false;   // explicitly skip
+    if (mapped) return mapped;            // known location
+  }
+  // Fallback: string match for unknown IDs
+  const l = (loc || '').toLowerCase();
+  if (l.includes('performance') || l.includes('lululemon') || l.includes('lab')) return 'lab';
+  if (l.includes('studio s') || l.includes('shimo')) return 'shimo';
+  if (l.includes('studio one') || l.includes('harajuku')) return 'harajuku';
+  return 'harajuku'; // default to harajuku for unknown
+}
+
+function toJSTDateString(isoString) {
+  // Convert UTC ISO to JST (UTC+9) display time — no leading zero on hours
+  const d = new Date(isoString);
+  const jst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+  const h = jst.getUTCHours();
+  const m = jst.getUTCMinutes();
+  return h + ':' + (m < 10 ? '0' : '') + m;
+}
+
+function getDayOfWeek(isoString) {
+  // Get 0=Mon..6=Sun in JST
+  const d = new Date(isoString);
+  const jst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+  return (jst.getUTCDay() + 6) % 7; // 0=Mon
+}
+
+function spotsTag(remaining, capacity, waitlistFull, allowWaitlist) {
+  if (remaining === null || remaining === undefined) return '';
+  if (remaining <= 0) {
+    if (allowWaitlist && !waitlistFull) return '<span class="spots-tag spots-low">Waitlist</span>';
+    return '<span class="spots-tag spots-full">Full</span>';
+  }
+  if (remaining <= 3) return '<span class="spots-tag spots-low">' + remaining + ' left</span>';
+  return '<span class="spots-tag spots-ok">' + remaining + ' spots</span>';
+}
+
+let liveClasses = []; // Populated from API
+let liveLoaded = false;
+
+async function fetchLiveSchedule() {
+  setBadge('loading');
+  try {
+    const now = new Date();
+    // JST midnight today (UTC+9)
+    // Always fetch from current week Monday (JST) as UTC
+    const weekStart = getWeekStart();
+    const fromDate = new Date(Date.UTC(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate()) - 9*60*60*1000).toISOString();
+
+    const sessionTypes = ['course-class','fitness','retreat','special-event','special-event-new'];
+    const PAGE_SIZE = 50;
+    // First call to get total count
+    const firstParams = new URLSearchParams();
+    sessionTypes.forEach(t => firstParams.append('sessionTypes[]', t));
+    firstParams.set('fromDate', fromDate);
+    firstParams.set('pageSize', String(PAGE_SIZE));
+    firstParams.set('page', '0');
+
+    const firstRes = await fetch(MOMENCE_BASE + '?' + firstParams.toString());
+    if (!firstRes.ok) throw new Error('HTTP ' + firstRes.status);
+    const firstData = await firstRes.json();
+
+    const firstSessions = Array.isArray(firstData.payload) ? firstData.payload : [];
+    const totalCount = firstData.pagination ? firstData.pagination.totalCount : firstSessions.length;
+    const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+    console.log('[Live] Total sessions:', totalCount, 'Pages needed:', totalPages);
+
+    let allSessions = [...firstSessions];
+
+    // Fetch remaining pages in parallel
+    if (totalPages > 1) {
+      const pageNums = Array.from({length: totalPages - 1}, (_, i) => i + 1);
+      const pageResults = await Promise.all(pageNums.map(async page => {
+        const params = new URLSearchParams();
+        sessionTypes.forEach(t => params.append('sessionTypes[]', t));
+        params.set('fromDate', fromDate);
+        params.set('pageSize', String(PAGE_SIZE));
+        params.set('page', String(page));
+        const res = await fetch(MOMENCE_BASE + '?' + params.toString());
+        if (!res.ok) return [];
+        const data = await res.json();
+        return Array.isArray(data.payload) ? data.payload : [];
+      }));
+      pageResults.forEach(sessions => { allSessions = allSessions.concat(sessions); });
+    }
+
+    console.log('[Live] Total fetched:', allSessions.length, 'Lab in raw:', allSessions.filter(s=>s.locationId===171678).length);
+
+    // ── Filter to current week only (JST dates) ──
+    function toJSTDateStr(iso) {
+      const d = new Date(iso);
+      const jst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+      return jst.getUTCFullYear() + '-' +
+             String(jst.getUTCMonth() + 1).padStart(2, '0') + '-' +
+             String(jst.getUTCDate()).padStart(2, '0');
+    }
+
+    // Get the 7 JST date strings for the displayed week
+    const displayedWeekDates = new Set(
+      Array.from({length: 7}, (_, i) => {
+        const d = getWeekDate(i);
+        return d.getFullYear() + '-' +
+               String(d.getMonth() + 1).padStart(2, '0') + '-' +
+               String(d.getDate()).padStart(2, '0');
+      })
+    );
+
+    // Also include next 4 weeks so navigation doesn't need re-fetch
+    const displayedRangeDates = new Set();
+    for (let w = 0; w <= 4; w++) {
+      for (let d = 0; d < 7; d++) {
+        const date = getWeekDate(d);
+        date.setDate(date.getDate() + w * 7);
+        const str = date.getFullYear() + '-' +
+                    String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(date.getDate()).padStart(2, '0');
+        displayedRangeDates.add(str);
+      }
+    }
+
+    // Keep all sessions but tag them with their JST date string for fast lookup
+    allSessions = allSessions.map(s => ({
+      ...s,
+      _jstDateStr: s.startsAt ? toJSTDateStr(s.startsAt) : null
+    })).filter(s => s._jstDateStr && displayedRangeDates.has(s._jstDateStr));
+
+    console.log('[Live] After week filter:', allSessions.length, 'Lab after filter:', allSessions.filter(s=>s.locationId===171678).length);
+
+    // ── Parse using correct field names from API response ──
+    liveClasses = allSessions.map(s => {
+      // startsAt is the correct field
+      const startISO = s.startsAt || s.startDateTime || s.dateTime || s.date || '';
+      const jstDateStr = s._jstDateStr || null;
+      if (!startISO) return null;
+
+      const time = toJSTDateString(startISO);
+      const day  = getDayOfWeek(startISO);
+
+      // location: 'studio one' = Harajuku, 'studio s' = Shimo
+      const studio = getStudioFromLocation(s.location || '', s.locationId);
+      if (s.locationId === 171678) {
+        console.log('[LAB DEBUG]', s.sessionName, 'studio returned:', studio, 'locationId:', s.locationId);
+      }
+      if (studio === false) return null; // skip FREUDE and other non-Ignite locations
+      const location = s.location || '';
+
+      // sessionName is the title field
+      const rawName = s.sessionName || s.title || s.name || 'Class';
+      const name = rawName
+        .replace(/^IGNITE YOGA /i, 'Ignite ')
+        .replace(/^IGNITE /i, 'Ignite ');
+
+      // teacher is a string directly
+      const instructor = s.teacher || '';
+
+      const dur          = s.durationMinutes || s.duration || 60;
+      // remainingSpots is the correct field (can be null = capacity not tracked)
+      const remaining    = s.remainingSpots !== null && s.remainingSpots !== undefined
+                           ? s.remainingSpots
+                           : (s.capacity && s.ticketsSold !== undefined ? s.capacity - s.ticketsSold : null);
+      const capacity     = s.capacity || null;
+      const bookingUrl   = s.link || 'https://momence.com/u/ignite-yoga';
+      const cancelled    = s.isCancelled || false;
+      const waitlistFull = s.waitlistFull || false;
+      const allowWait    = s.allowWaitlist || false;
+
+      return {
+        id: 'live_' + s.id,
+        day, time, dur, name, instructor,
+        studio, location: s.location || '',
+        spotsRemaining: remaining,
+        capacity, bookingUrl, cancelled,
+        waitlistFull, allowWaitlist: allowWait,
+        live: true, rawDate: startISO,
+      };
+    }).filter(s => s && s.day >= 0 && !s.cancelled && s.studio !== false);
+
+    liveLoaded = true;
+    console.log('[Live] Total parsed:', liveClasses.length);
+    console.log('[Live] By studio:', liveClasses.reduce((acc, c) => { acc[c.studio] = (acc[c.studio]||0)+1; return acc; }, {}));
+    console.log('[Live] Sample lab:', liveClasses.filter(c=>c.studio==='lab').slice(0,2).map(c=>({date:c.rawDate,name:c.name,studio:c.studio})));
+    const byStudioCount = {};
+    liveClasses.filter(c => c.studio && c.studio !== false).forEach(c => { byStudioCount[c.studio] = (byStudioCount[c.studio]||0)+1; });
+    const labCount = byStudioCount['lab'] || 0;
+    const yogaCount = (byStudioCount['harajuku']||0) + (byStudioCount['shimo']||0);
+    setBadge('live', yogaCount + ' yoga · ' + labCount + ' lab · live');
+    injectLiveClasses();
+
+  } catch (err) {
+    console.error('Momence API error:', err);
+    setBadge('error', 'Live data unavailable — showing manual schedule');
+  }
+}
+
+function setBadge(state, msg) {
+  const el = document.getElementById('liveBadge');
+  if (!el) return;
+  if (state === 'loading') {
+    el.className = 'loading-badge';
+    el.innerHTML = '<div class="loading-dot"></div>' + (msg || 'Fetching live schedule…');
+  } else if (state === 'live') {
+    el.className = 'live-badge';
+    el.innerHTML = '<div class="live-dot"></div>Live' + (msg ? ' · ' + msg : '');
+  } else {
+    el.className = 'error-badge';
+    el.innerHTML = '⚠ ' + (msg || 'Error');
+  }
+}
+
+function injectLiveClasses() {
+  // Remove existing live pills
+  document.querySelectorAll('#schedGrid .pill.live-class').forEach(el => el.remove());
+
+  // Get the 7 date strings for the current week (YYYY-MM-DD in JST)
+  const weekDateStrings = DAYS.map((_, i) => {
+    const d = getWeekDate(i);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day; // e.g. "2026-05-01"
+  });
+
+  // Convert each live class rawDate (UTC ISO) to JST date string
+  function toJSTDateStr(iso) {
+    const d = new Date(iso);
+    const jst = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+    return jst.getUTCFullYear() + '-' +
+           String(jst.getUTCMonth() + 1).padStart(2, '0') + '-' +
+           String(jst.getUTCDate()).padStart(2, '0');
+  }
+
+  // For each live class, check if its JST date matches any column this week
+  liveClasses.forEach(cls => {
+    if (!cls.rawDate) return;
+    const clsDateStr = toJSTDateStr(cls.rawDate);
+    const colIdx = weekDateStrings.indexOf(clsDateStr);
+    if (colIdx === -1) return; // not in this week
+
+    const slotMins = timeToMins(cls.time);
+
+    // Add time slot if missing — mark guard so no re-entry
+    const clsTimeNormalized = cls.time.replace(/^0(\d):/, '$1:');
+    if (clsTimeNormalized !== cls.time) cls = {...cls, time: clsTimeNormalized};
+    if (!TIME_SLOTS.includes(cls.time)) {
+      TIME_SLOTS.push(cls.time);
+      TIME_SLOTS.sort((a, b) => timeToMins(a) - timeToMins(b));
+      // Don't call buildGrid here — it will re-run injectLiveClasses automatically
+      return;
+    }
+
+    // Find matching time label — normalize both to no-leading-zero format
+    const normalizeTime = t => t.replace(/^0(\d):/, '$1:');
+    const clsTimeNorm = normalizeTime(cls.time);
+    const timeLabels = Array.from(document.querySelectorAll('.time-label'));
+    const slotIdx = timeLabels.findIndex(tl => normalizeTime(tl.textContent.trim()) === clsTimeNorm);
+    if (slotIdx === -1) return;
+
+    // Get the day cell at this slot
+    const dayCells = document.querySelectorAll('.day-cell[data-col="' + colIdx + '"]');
+    const cell = dayCells[slotIdx];
+    if (!cell) return;
+
+    // Remove any existing live pill for same id (prevent duplicates on re-inject)
+    const existing = cell.querySelector('.pill[data-id="' + cls.id + '"]');
+    if (existing) existing.remove();
+
+    const pill = document.createElement('div');
+    pill.className = 'pill ' + cls.studio + ' live-class';
+    pill.dataset.id = cls.id;
+    pill.dataset.studio = cls.studio;
+    pill.style.cursor = 'pointer';
+
+    const spots = spotsTag(cls.spotsRemaining, cls.capacity, cls.waitlistFull, cls.allowWaitlist);
+
+    pill.innerHTML =
+      '<div class="pill-time">' + cls.time + (cls.dur ? ' · ' + cls.dur + 'm' : '') + '</div>' +
+      '<div class="pill-name">' + cls.name + '</div>' +
+      '<div class="pill-instructor">' + cls.instructor + '</div>' +
+      (spots || '') +
+      (cls.location ? '<div style="font-size:7px;opacity:0.5;margin-top:2px">' + cls.location + '</div>' : '');
+
+    pill.addEventListener('click', () => toggleBank(cls.id, colIdx));
+    cell.appendChild(pill);
+  });
+
+  applyFilters();
+}
+
+
+function refreshLive() {
+  liveClasses = [];
+  liveLoaded = false;
+  fetchLiveSchedule();
+}
+
+// buildGrid override removed — live injection handled inside buildGrid directly
+
+// Auto-fetch on load
+fetchLiveSchedule();
+
+// ─────────────────────────────────────────────────────────────
+// GOOGLE CALENDAR INTEGRATION
+// ─────────────────────────────────────────────────────────────
+// HOW TO SET UP:
+// 1. Go to https://console.cloud.google.com
+// 2. Create a project → Enable "Google Calendar API"
+// 3. OAuth consent screen → External → add your email as test user
+// 4. Credentials → Create OAuth Client ID → Web Application
+// 5. Authorised JavaScript origins: add the URL where you open this file
+//    (e.g. http://localhost:8080 or your hosting URL)
+// 6. Authorised redirect URIs: same URL
+// 7. Copy your Client ID below
+
+const GCAL_CLIENT_ID = '491867205350-m0gkdhgsi8ek4r444vhbicqhr4vkdrlt.apps.googleusercontent.com';
+const GCAL_SCOPES    = 'https://www.googleapis.com/auth/calendar.events';
+
+let gcalToken = null;
+let gcalTokenClient = null;
+
+// Restore token from sessionStorage across page interactions
+(function restoreToken() {
+  const saved = sessionStorage.getItem('gcal_token');
+  if (saved) {
+    gcalToken = JSON.parse(saved);
+    gcalSetConnected(gcalToken.email || 'Connected');
+  }
+})();
+
+function gcalLoadGIS() {
+  return new Promise((resolve, reject) => {
+    if (window.google && window.google.accounts) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Failed to load Google Identity Services'));
+    document.head.appendChild(s);
+  });
+}
+
+async function gcalConnect() {
+  if (!GCAL_CLIENT_ID || GCAL_CLIENT_ID.trim() === '') {
+    gcalShowResult('error', '⚠ No Client ID set.');
+    return;
+  }
+
+  gcalSetStatus('Connecting…');
+  try {
+    await gcalLoadGIS();
+    gcalTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GCAL_CLIENT_ID,
+      scope: GCAL_SCOPES,
+      callback: async (resp) => {
+        if (resp.error) {
+          gcalSetStatus('Not connected');
+          gcalShowResult('error', '⚠ Auth failed: ' + resp.error);
+          return;
+        }
+        // Fetch user profile to show their email
+        let email = '';
+        try {
+          const me = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: 'Bearer ' + resp.access_token }
+          });
+          const meJson = await me.json();
+          email = meJson.email || '';
+        } catch(e) {}
+
+        gcalToken = { access_token: resp.access_token, email };
+        sessionStorage.setItem('gcal_token', JSON.stringify(gcalToken));
+        gcalSetConnected(email || 'Connected');
+        gcalShowResult('success', '✓ Connected' + (email ? ' as ' + email : '') + '. Click "Send plan to Google Calendar" to add your planned classes.');
+      }
+    });
+    gcalTokenClient.requestAccessToken({ prompt: 'consent' });
+  } catch(e) {
+    gcalSetStatus('Not connected');
+    gcalShowResult('error', '⚠ ' + e.message);
+  }
+}
+
+function gcalDisconnect() {
+  gcalToken = null;
+  sessionStorage.removeItem('gcal_token');
+  document.getElementById('gcal-auth-btn').style.display = '';
+  document.getElementById('gcal-export-btn').style.display = 'none';
+  document.getElementById('gcal-disconnect-btn').style.display = 'none';
+  gcalSetStatus('Not connected');
+  gcalHideResult();
+}
+
+function gcalSetConnected(label) {
+  gcalSetStatus('✓ ' + label);
+  document.getElementById('gcal-auth-btn').style.display = 'none';
+  document.getElementById('gcal-export-btn').style.display = '';
+  document.getElementById('gcal-disconnect-btn').style.display = '';
+}
+
+function gcalSetStatus(msg) {
+  document.getElementById('gcal-status').textContent = msg;
+}
+
+function gcalShowResult(type, msg) {
+  const el = document.getElementById('gcal-result');
+  el.style.display = '';
+  el.style.color = type === 'error' ? '#9B3A3A' : type === 'success' ? '#3A6B3A' : 'var(--muted)';
+  el.innerHTML = msg;
+}
+
+function gcalHideResult() {
+  document.getElementById('gcal-result').style.display = 'none';
+}
+
+// Get the real calendar date for a class given the day-of-week index
+function gcalGetClassDate(dayIdx) {
+  // dayIdx: 0=Mon … 6=Sun, matching the app's DAYS array
+  const today = new Date();
+  const todayDowJS = today.getDay(); // 0=Sun…6=Sat
+  // Convert app's Mon-based index to JS Sun-based
+  const appDow = (dayIdx + 1) % 7; // Mon=1, Sun=0 in JS
+  let diff = appDow - todayDowJS;
+  // Always go to the current or upcoming week's date
+  // Find the Monday of the current displayed week
+  const weekOffset = parseInt(document.querySelector('[data-week-offset]')?.dataset?.weekOffset || '0');
+  const monday = new Date(today);
+  const daysSinceMonday = (todayDowJS === 0 ? 6 : todayDowJS - 1);
+  monday.setDate(today.getDate() - daysSinceMonday + weekOffset * 7);
+  const d = new Date(monday);
+  d.setDate(monday.getDate() + dayIdx);
+  return d;
+}
+
+async function gcalExportPlan() {
+  if (!gcalToken) { gcalShowResult('error', '⚠ Not connected — please connect Google Calendar first.'); return; }
+
+  // Collect all banked classes
+  const toCreate = [];
+  Object.entries(bank).forEach(([dayIdx, ids]) => {
+    ids.forEach(cid => {
+      const cls = CLASSES.find(c=>c.id===cid) || liveClasses.find(c=>c.id===cid);
+      if (!cls) return;
+      toCreate.push({ cls, dayIdx: parseInt(dayIdx) });
+    });
+  });
+
+  // Also add panel custom blocks
+  if (typeof panelCustomBlocks !== 'undefined') {
+    panelCustomBlocks.forEach(pcb => {
+      toCreate.push({ cls: {
+        name: pcb.label, time: pcb.time, dur: pcb.dur,
+        studio: 'custom', instructor: '', bookingUrl: '', location: pcb.note || ''
+      }, dayIdx: pcb.day });
+    });
+  }
+
+  if (toCreate.length === 0) {
+    gcalShowResult('error', '⚠ No classes in your plan yet — click classes on the calendar to add them first.');
+    return;
+  }
+
+  const btn = document.getElementById('gcal-export-btn');
+  btn.disabled = true;
+  btn.textContent = 'Creating events…';
+  gcalShowResult('info', 'Creating ' + toCreate.length + ' calendar event' + (toCreate.length !== 1 ? 's' : '') + '…');
+
+  const studioLabels = {
+    pilates: 'Pilates (Shinjuku)',
+    harajuku: 'Yoga — Harajuku',
+    shimo: 'Yoga — Shimokitazawa',
+    strength: 'Strength Lab',
+    run: 'Running Club',
+    lab: 'Ignite Lab',
+    custom: 'Custom block'
+  };
+
+  let created = 0, failed = 0, skipped = 0;
+  const results = [];
+
+  for (const { cls, dayIdx } of toCreate) {
+    try {
+      const classDate = gcalGetClassDate(dayIdx);
+      const [hStr, mStr] = cls.time.split(':');
+      const h = parseInt(hStr), m = parseInt(mStr);
+      const dur = cls.dur || 60;
+
+      const start = new Date(classDate);
+      start.setHours(h, m, 0, 0);
+      const end = new Date(start.getTime() + dur * 60000);
+
+      // Format as local datetime string (no Z — Google Calendar treats as local)
+      const fmt = d => d.getFullYear() + '-' +
+        String(d.getMonth()+1).padStart(2,'0') + '-' +
+        String(d.getDate()).padStart(2,'0') + 'T' +
+        String(d.getHours()).padStart(2,'0') + ':' +
+        String(d.getMinutes()).padStart(2,'0') + ':00';
+
+      const studioLabel = studioLabels[cls.studio] || cls.studio || '';
+      let description = studioLabel;
+      if (cls.instructor) description += '\nInstructor: ' + cls.instructor;
+      if (cls.location) description += '\nLocation: ' + cls.location;
+      if (cls.bookingUrl) description += '\nBook: ' + cls.bookingUrl;
+      description += '\n\nAdded from My Studios planner';
+
+      const event = {
+        summary: cls.name + (studioLabel ? ' · ' + studioLabel : ''),
+        description,
+        start: { dateTime: fmt(start), timeZone: 'Asia/Tokyo' },
+        end:   { dateTime: fmt(end),   timeZone: 'Asia/Tokyo' },
+        colorId: gcalColorId(cls.studio),
+        reminders: {
+          useDefault: false,
+          overrides: [{ method: 'popup', minutes: 30 }]
+        }
+      };
+
+      const resp = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + gcalToken.access_token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(event)
+      });
+
+      if (resp.status === 401) {
+        // Token expired — ask to reconnect
+        gcalToken = null; sessionStorage.removeItem('gcal_token');
+        gcalDisconnect();
+        gcalShowResult('error', '⚠ Session expired — please reconnect Google Calendar and try again.');
+        btn.disabled = false; btn.textContent = '↑ Send plan to Google Calendar';
+        return;
+      }
+
+      const data = await resp.json();
+      if (resp.ok) {
+        created++;
+        results.push('✓ ' + cls.name + ' (' + DAYS[dayIdx] + ' ' + cls.time + ')');
+      } else {
+        failed++;
+        results.push('✗ ' + cls.name + ' — ' + (data.error?.message || 'unknown error'));
+      }
+    } catch(e) {
+      failed++;
+      results.push('✗ ' + (cls.name||'Unknown') + ' — ' + e.message);
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = '↑ Send plan to Google Calendar';
+
+  const summary = (created > 0 ? '✓ ' + created + ' event' + (created!==1?'s':'') + ' added to Google Calendar' : '') +
+    (failed > 0 ? (created>0?'\n':'') + '✗ ' + failed + ' failed' : '');
+
+  gcalShowResult(failed > 0 && created === 0 ? 'error' : 'success',
+    summary + '<br><br>' +
+    '<span style="color:var(--muted);font-size:8px">' + results.join('<br>') + '</span>'
+  );
+}
+
+// Map studio types to Google Calendar color IDs
+function gcalColorId(studio) {
+  const map = {
+    pilates:  '11', // red-ish tomato
+    harajuku: '10', // green (sage)
+    shimo:    '9',  // blue (blueberry)
+    strength: '3',  // purple (grape)
+    run:      '6',  // orange (tangerine)
+    lab:      '5',  // yellow (banana)
+  };
+  return map[studio] || '8'; // graphite default
+}
+
+</script>
+</body>
+</html>
